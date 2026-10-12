@@ -50,7 +50,7 @@ function checkDefinition(c) {
     if (!c.run || typeof c.run !== "string") throw new Error("command.run missing");
     const t=Date.now();
     const timeoutMs=Math.min(Math.max(c.timeoutMs || 90000,1000),300000);
-    const run=spawnSync("bash",["-lc",c.run],{cwd:root,encoding:"utf8",timeout:timeoutMs,
+    const run=spawnSync("/bin/sh",["-c",c.run],{cwd:root,encoding:"utf8",timeout:timeoutMs,
       env:{...process.env,ASTRA_MASTER_GATE_ACTIVE:"1"},maxBuffer:1024*1024});
     const result={type:"command",command:c.run,status:run.status===0&&!run.error?"PASS":"FAIL",
       exitCode:run.status,durationMs:Date.now()-t,outputSha256:sha256((run.stdout||"")+(run.stderr||""))};
@@ -143,6 +143,7 @@ async function main() {
   writeReport(report);
   console.log("ASTRA_MASTER_GATE",JSON.stringify({siteId:report.siteId,task,status:report.status,summary:report.summary,report:relative(root,reportFile)}));
   for (const r of [...failures,...unverified]) console.error("ASTRA_UNPROVEN_BRICK",r.id,r.status,r.reason||"check-failed");
+  for (const r of failures) for (const e of r.evidence||[]) if(e.status==="FAIL") console.error("ASTRA_EXECUTABLE_FAILURE",JSON.stringify({id:r.id,type:e.type,exitCode:e.exitCode??null,error:e.error||null,reason:e.reason||null}));
   if (unknownBindings.length) console.error("ASTRA_UNKNOWN_BINDINGS",unknownBindings.join(","));
   if (untrackedScripts.length) console.error("ASTRA_UNTRACKED_SCRIPTS",untrackedScripts.join(","));
   if (invalidExemptions.length) console.error("ASTRA_INVALID_EXEMPTIONS",invalidExemptions.join(","));
