@@ -18,6 +18,7 @@ function fixture(bricks,checks,capabilities=[]) {
   const run=()=> {
     const res=spawnSync(process.execPath,[runner,"--task=code","--strict"],{cwd,encoding:"utf8",timeout:10000});
     const data=JSON.parse(fs.readFileSync(path.join(cwd,"artifacts/astra-master-gate/report.json"),"utf8"));
+    if (data.fatal) console.error("ASTRA_FIXTURE_FATAL", data.fatal, "STDERR", res.stderr, "STDOUT", res.stdout);
     return {res,data};
   };
   return {cwd,run};
