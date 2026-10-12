@@ -14,7 +14,7 @@ function fixture(bricks,checks,capabilities=[]) {
   for (const id of required) if (!all.some(b=>b.id===id)) all.push({id,scope:"universal",on:["seo"]});
   while (all.length<39) all.push({id:"FILLER_"+all.length,scope:"not-applicable",on:["seo"]});
   fs.writeFileSync(path.join(cwd,"config/astra-brick-registry.json"),JSON.stringify({schema:"astra-brick-registry/1",bricks:all}));
-  fs.writeFileSync(path.join(cwd,"config/astra-master-site.json"),JSON.stringify({siteId:"test-site",capabilities,checks}));
+  fs.writeFileSync(path.join(cwd,"config/astra-master-site.json"),JSON.stringify({schema:"astra-master-site/1",siteId:"test-site",capabilities,checks}));
   const run=()=> {
     const res=spawnSync(process.execPath,[runner,"--task=code","--strict"],{cwd,encoding:"utf8",timeout:10000});
     const data=JSON.parse(fs.readFileSync(path.join(cwd,"artifacts/astra-master-gate/report.json"),"utf8"));
