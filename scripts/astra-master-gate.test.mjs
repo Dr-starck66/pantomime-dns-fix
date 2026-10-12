@@ -70,3 +70,15 @@ test("unregistered ASTRA scripts cannot bypass the catalog",()=>{
   assert.notEqual(res.status,0);
   assert.deepEqual(data.untrackedScripts,["scripts/astra-hidden-guard.mjs"]);
 });
+
+test("missing a canonical brick rejects a same-sized registry",()=>{
+  const f=fixture([always],{ALWAYS:[{type:"command",run:"true"}]});
+  const p=path.join(f.cwd,"config/astra-brick-registry.json");
+  const registry=JSON.parse(fs.readFileSync(p,"utf8"));
+  registry.bricks=registry.bricks.filter(b=>b.id!=="ASTRA_NEWS_ELIGIBILITY");
+  registry.bricks.push({id:"SHADOW_BRICK",scope:"fixture-only",on:["seo"]});
+  fs.writeFileSync(p,JSON.stringify(registry));
+  const {res,data}=f.run();
+  assert.notEqual(res.status,0);
+  assert.match(data.fatal,/STALE_REGISTRY_BASELINE/);
+});
