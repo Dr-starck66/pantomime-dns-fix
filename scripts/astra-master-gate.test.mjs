@@ -30,7 +30,7 @@ test("PASS requires a successfully executed command and evidence report",()=>{
   const {res,data}=run();
   assert.equal(res.status,0);
   assert.equal(data.status,"PASS");
-  assert.deepEqual(data.summary,{pass:1,na:38,fail:0,unverified:0,unknownBindings:0});
+  assert.deepEqual(data.summary,{pass:1,na:38,fail:0,unverified:0,unknownBindings:0,untrackedScripts:0,invalidExemptions:0});
   assert.match(data.registrySha256,/^[a-f0-9]{64}$/);
 });
 test("missing executable proof is never a PASS",()=>{
